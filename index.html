@@ -1,0 +1,231 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>Since The Day</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta http-equiv-"X-UA-Compatible" content="IE=9"/>
+		<link type="text/css" rel="stylesheet" href="./css/default.css">
+		<script type="text/javascript" src="./js/jquery.min.js"></script>
+		<script type="text/javascript" src="./js/jscex.min.js"></script>
+		<script type="text/javascript" src="./js/jscex-parser.js"></script>
+		<script type="text/javascript" src="./js/jscex-jit.js"></script>
+		<script type="text/javascript" src="./js/jscex-builderbase.min.js"></script>
+		<script type="text/javascript" src="./js/jscex-async.min.js"></script>
+		<script type="text/javascript" src="./js/jscex-async-powerpack.min.js"></script>
+		<script type="text/javascript" src="./js/functions.js" charset="utf-8"></script>
+		<script type="text/javascript" src="./js/love.js" charset="utf-8"></script>
+		<script type="text/javascript" src="./js/kk_lrc.js" charset="utf-8"></script>
+	</head>
+	<body>
+		<div id="main">
+			<div id="wrap">
+				<audio id="music" autoplay="autopaly" loop="loop">
+					<source src="music/Heaven.mp3" type="audio/mp3" />
+					<source src="music/Heaven.ogg" type="audio/ogg" />
+				</audio>
+				<ul id="music_lrc" class="kk_lrc"><li></li><li></li><li></li></ul>
+				<div id="text">
+					<span class="title">あなたが好きなの</span><br />
+					<br />    
+					<br />    
+					<span class="strong">あなたの瞳が好き。 </span><br />  
+					<span class="say">春の银河のようにきらめく瞳が、春の日差しのような优しい眼差しが好き。 </span><br />
+					<span class="seperate"></span><br />    
+					<span class="strong">あなたの髪が好き。 </span><br />  
+					<span class="say">微风にひらめくシルクのような、さらさらの髪が好き。 </span><br />
+					<span class="seperate"></span><br />    
+					<span class="strong">あなたの唇が好き。 </span><br />  
+					<span class="say">蜜のような口付けをくれる、切ない吐息を闻かせてくれる唇が好き。 </span><br />
+					<span class="seperate"></span><br />    
+					<span class="strong">あなたの声が好き。 </span><br />  
+					<span class="say">高くて甘い、心に沁み込む、澄み切った声が好き。 </span><br />
+					<span class="seperate"></span><br />    
+					<span class="strong">あなたの体が好き。 </span><br />  
+					<span class="say">抱きしめると折れてしまいそうな华奢な腰が、薄くてでも形のよい胸が、重ねた肌から伝わってくる温もりが好き。 </span><br />
+					<span class="seperate"></span><br />    
+					<span class="strong">でも、一番好きなのは、あなたの心。 </span><br />  
+					<span class="say">脆くて伤つきやすい、でもどこまでも纯粋で美しい、决して谁も责めたりしない、すべてを许す、优しさに満ちた魂。 </span><br />
+					<span class="seperate"></span><br />    
+					<span class="strong">好きよ。大好き。 </span><br />  
+					<span class="say">あなたのすべてが爱しくてたまらないの、鴉。 </span><br />    
+					<span class="say">あなた以外のものなんかもう何もいらない。 </span><br />        
+					<span class="strong">ただあなただけが欲しいの。喜欢你。</span><br />              
+					<span class="space"></span>-- <span class="strong">めい</span> --
+				</div>
+				<div id="clock-box">
+					亲爱的 <span class="name">鸦妹</span>，我们已经共同走过
+					<div id="clock"></div>
+				</div>
+				<canvas id="canvas" width="1100" height="680"></canvas>
+			</div>
+			<div id="errorMsg">您的浏览器不支持HTML5!<br/>请使用Chrome 14+/IE 9+/Firefox 7+/Safari 4+访问</div>
+			<div id="copyright">
+				Inspired by <a href="http://www.ikk.me/archives/default/html5_player_with_lrc.html/">KK's Blog</a> | Copyright © 2011 <a href='http://hackerzhou.me'>hackerzhou.me</a> | Copyleft (ɔ) 2014 <a href='http://weibo.com/xelz'>.xelz_history</a>
+			</div>
+		</div>
+		<script>
+		(function(){
+			if ($("#main").width() < 1100) $("#main").css("width","1100px");
+			if (!document.createElement('canvas').getContext) {
+				$("#error").show();
+				return false;
+			}
+			if (!!document.createElement('audio').canPlayType) {
+				bgmusic = document.getElementById("music");
+				bgmusic.volume = 0.3;
+				$.ajax({
+					url: 'music/Heaven.lrc',
+					dataType: 'text',
+					success: function(text) {
+						lrc = load_kk_lrc('music');
+						pattern = new RegExp('\\[(\\d{2}):(\\d{2}(\\.\\d{2})?)\\](.*)');
+						$.each(text.split('\n'), function(index, line) {
+							r = line.match(pattern);
+							if (!r) return;
+							time = parseInt(r[1]) * 60 + parseFloat(r[2]);
+							lrc_text = r[4];
+							lrc.add_lrc(time, lrc_text);
+						});
+						lrc.init();
+					}
+				});
+			}
+			var canvas = $('#canvas');
+			var width = canvas.width();
+			var height = canvas.height();	
+			canvas.attr("width", width);
+			canvas.attr("height", height);
+			var opts = {
+				seed: {
+					x: width / 2 - 20,
+					color: "rgb(190, 26, 37)",
+					scale: 2
+				},
+				branch: [
+					[535, 680, 570, 250, 500, 200, 30, 100, [
+						[540, 500, 455, 417, 340, 400, 13, 100, [
+							[450, 435, 434, 430, 394, 395, 2, 40]
+						]],
+						[550, 445, 600, 356, 680, 345, 12, 100, [
+							[578, 400, 648, 409, 661, 426, 3, 80]
+						]],
+						[539, 281, 537, 248, 534, 217, 3, 40],
+						[546, 397, 413, 247, 328, 244, 9, 80, [
+							[427, 286, 383, 253, 371, 205, 2, 40],
+							[498, 345, 435, 315, 395, 330, 4, 60]
+						]],
+						[546, 357, 608, 252, 678, 221, 6, 100, [
+							[590, 293, 646, 277, 648, 271, 2, 80]
+						]]
+					]] 
+				],
+				bloom: {
+					num: 700,
+					width: 1080,
+					height: 650
+				},
+				footer: {
+					width: 1200,
+					height: 5,
+					speed: 10
+				}
+			}
+			var tree = new Tree(canvas[0], width, height, opts);
+			var seed = tree.seed;
+			var foot = tree.footer;
+			var hold = 1;
+			canvas.click(function(e) {
+				var offset = canvas.offset(), x, y;
+				x = e.pageX - offset.left;
+				y = e.pageY - offset.top;
+				if (seed.hover(x, y)) {
+					hold = 0; 
+					canvas.unbind("click");
+					canvas.unbind("mousemove");
+					canvas.removeClass('hand');
+					$("#music_lrc").fadeIn(1500);
+					setTimeout(function(){$("#music_lrc").css("left", "870px");}, 1500);
+				}
+				document.getElementById("music").play();
+			}).mousemove(function(e){
+				var offset = canvas.offset(), x, y;
+				x = e.pageX - offset.left;
+				y = e.pageY - offset.top;
+				canvas.toggleClass('hand', seed.hover(x, y));
+			});
+			var seedAnimate = eval(Jscex.compile("async", function () {
+				seed.draw();
+				while (hold) {
+					$await(Jscex.Async.sleep(10));
+				}
+				while (seed.canScale()) {
+					seed.scale(0.95);
+					$await(Jscex.Async.sleep(10));
+				}
+				while (seed.canMove()) {
+					seed.move(0, 2);
+					foot.draw();
+					$await(Jscex.Async.sleep(10));
+				}
+			}));
+			var growAnimate = eval(Jscex.compile("async", function () {
+				do {
+					tree.grow();
+					$await(Jscex.Async.sleep(10));
+				} while (tree.canGrow());
+			}));
+			var flowAnimate = eval(Jscex.compile("async", function () {
+				do {
+					tree.flower(2);
+					$await(Jscex.Async.sleep(10));
+				} while (tree.canFlower());
+			}));
+			var moveAnimate = eval(Jscex.compile("async", function () {
+				tree.snapshot("p1", 240, 0, 610, 680);
+				while (tree.move("p1", 500, 0)) {
+					foot.draw();
+					$await(Jscex.Async.sleep(10));
+				}
+				foot.draw();
+				tree.snapshot("p2", 500, 0, 610, 680);
+				canvas.parent().css("background", "url(" + tree.toDataURL('image/png') + ")");
+				$await(Jscex.Async.sleep(300));
+				canvas.css("background", "none");
+			}));
+			var jumpAnimate = eval(Jscex.compile("async", function () {
+				var ctx = tree.ctx;
+				while (true) {
+					tree.ctx.clearRect(0, 0, width, height);
+					tree.jump();
+					foot.draw();
+					$await(Jscex.Async.sleep(25));
+				}
+			}));
+			var textAnimate = eval(Jscex.compile("async", function () {
+				var together = new Date();
+				together.setFullYear(2013, 3, 20);
+				together.setHours(18);	
+				together.setMinutes(0);
+				together.setSeconds(0);
+				together.setMilliseconds(0);
+				$("#text").typewriter();
+				$await(Jscex.Async.sleep(5000));
+				$("#clock-box").fadeIn(5000);
+				while (true) {
+					timeElapse(together);
+					$await(Jscex.Async.sleep(1000));
+				}
+			}));
+			var runAsync = eval(Jscex.compile("async", function () {
+				$await(seedAnimate());
+				$await(growAnimate());
+				$await(flowAnimate());
+				$await(moveAnimate());
+				textAnimate().start();
+				$await(jumpAnimate());
+			}));
+			runAsync().start();
+		})();
+		</script>
+	</body>
+</html>

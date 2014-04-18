@@ -67,7 +67,7 @@
 		(function(){
 			if ($("#main").width() < 1100) $("#main").css("width","1100px");
 			if (!document.createElement('canvas').getContext) {
-				$("#error").show();
+				$("#errorMsg").show();
 				return false;
 			}
 			if (!!document.createElement('audio').canPlayType) {
